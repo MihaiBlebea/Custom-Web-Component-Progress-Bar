@@ -1,6 +1,6 @@
 (function() {
 
-    class Progress extends HTMLElement
+    class SimpleProgress extends HTMLElement
     {
         constructor()
         {
@@ -148,6 +148,6 @@
         }
     }
 
-    customElements.define('progress-bar', Progress)
+    module.exports = SimpleProgress
 
 })()
