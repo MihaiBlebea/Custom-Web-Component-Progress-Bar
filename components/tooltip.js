@@ -6,6 +6,9 @@
         {
             super()
             this.attachShadow({ mode: 'open' })
+
+            this.openTooltip  = this.openTooltip.bind(this)
+            this.closeTooltip = this.closeTooltip.bind(this)
         }
 
         connectedCallback()
@@ -50,15 +53,10 @@
             this.icon.style.marginRight     = '5px'
             this.icon.style.borderRadius    = '50%'
             this.icon.style.boxShadow       = '2px 2px 2px black'
+            this.icon.style.cursor          = 'pointer'
 
-            this.icon.addEventListener('mouseenter', ()=> {
-                this.icon.style.cursor = 'pointer'
-                this.wraper.appendChild(this.tooltip)
-            })
-
-            this.icon.addEventListener('mouseleave', ()=> {
-                this.wraper.removeChild(this.tooltip)
-            })
+            this.icon.addEventListener('mouseenter', this.openTooltip)
+            this.icon.addEventListener('mouseleave', this.closeTooltip)
 
             this.wraper.appendChild(this.label)
             this.wraper.appendChild(this.icon)
@@ -67,8 +65,8 @@
 
         disconnectedCallback()
         {
-            this.icon.removeEventListener('mouseenter')
-            this.icon.removeEventListener('mouseleave')
+            this.icon.removeEventListener('mouseenter', this.openTooltip)
+            this.icon.removeEventListener('mouseleave', this.closeTooltip)
         }
 
         get text()
@@ -79,6 +77,16 @@
         set text(value)
         {
             return this.setAttribute('text', value)
+        }
+
+        openTooltip()
+        {
+            this.wraper.appendChild(this.tooltip)
+        }
+
+        closeTooltip()
+        {
+            this.wraper.removeChild(this.tooltip)
         }
 
         attributeChangedCallback()

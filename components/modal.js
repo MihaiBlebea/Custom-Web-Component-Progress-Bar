@@ -6,6 +6,9 @@
         {
             super()
             this.attachShadow({ mode: 'open' })
+
+            this.openModal  = this.openModal.bind(this)
+            this.closeModal = this.closeModal.bind(this)
         }
 
         connectedCallback()
@@ -43,16 +46,23 @@
             this.close.style.boxShadow       = '2px 2px 2px black'
             this.close.style.float           = 'right'
             this.close.style.cursor          = 'pointer'
-            this.close.addEventListener('click', ()=> {
-                this.show = false
-            })
+            this.close.addEventListener('click', this.closeModal)
 
-            this.content = document.createElement('slot')
+            this.slotContent = document.createElement('slot')
+
+            this.slotTitle = document.createElement('slot')
+            this.slotTitle.setAttribute('name', 'title')
 
             this.modal.appendChild(this.close)
-            this.modal.appendChild(this.content)
+            this.modal.appendChild(this.slotTitle)
+            this.modal.appendChild(this.slotContent)
             this.overlay.appendChild(this.modal)
             this.shadowRoot.appendChild(this.overlay)
+        }
+
+        disconnectedCallback()
+        {
+            this.close.removeEventListener('click', this.closeModal)
         }
 
         static get observedAttributes() {
@@ -67,6 +77,16 @@
         set show(value)
         {
             return this.setAttribute('show', value)
+        }
+
+        openModal()
+        {
+            this.setAttribute('show', 'true')
+        }
+
+        closeModal()
+        {
+            this.setAttribute('show', 'false')
         }
 
         handleShowToggle()

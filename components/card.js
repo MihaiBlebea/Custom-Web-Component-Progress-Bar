@@ -9,6 +9,9 @@
             this.attachShadow({ mode: 'open' })
 
             this.borderRadius = '5px'
+
+            this.openOverlay  = this.openOverlay.bind(this)
+            this.closeOverlay = this.closeOverlay.bind(this)
         }
 
         connectedCallback()
@@ -17,23 +20,15 @@
             this.card.style.position     = 'relative'
             this.card.style.borderRadius = this.borderRadius
             this.card.style.boxShadow    = '2px 2px 5px'
-            this.card.addEventListener('mouseenter', ()=> {
-                this.overlay.style.top = 0
-                this.overlay.style.height = '100%'
-            })
-            this.card.addEventListener('mouseleave', ()=> {
-                this.overlay.style.top = '100%'
-                this.overlay.style.height = 0
-            })
+            this.card.addEventListener('mouseenter', this.openOverlay)
+            this.card.addEventListener('mouseleave', this.closeOverlay)
 
             this.img = document.createElement('img')
             this.img.src = this.image
             this.img.style.borderRadius = this.borderRadius
             this.img.style.width        = '100%'
+            this.img.style.cursor       = 'pointer'
 
-            this.img.addEventListener('mouseenter', ()=> {
-                this.img.style.cursor = 'pointer'
-            })
 
             this.overlay = document.createElement('div')
             this.overlay.style.position        = 'absolute'
@@ -81,9 +76,22 @@
             return this.setAttribute('color', value)
         }
 
+        openOverlay()
+        {
+            this.overlay.style.top = 0
+            this.overlay.style.height = '100%'
+        }
+
+        closeOverlay()
+        {
+            this.overlay.style.top = '100%'
+            this.overlay.style.height = 0
+        }
+
         disconnectedCallback()
         {
-            //
+            this.card.removeEventListener('mouseenter', this.openOverlay)
+            this.card.removeEventListener('mouseleave', this.closeOverlay)
         }
 
         attributeChangedCallback(name, oldValue, newValue)

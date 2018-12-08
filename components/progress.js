@@ -23,9 +23,12 @@
             this.bar.style.borderRadius    = this.body.style.borderRadius
             this.bar.style.width           = this.progress + '%'
             this.bar.style.transition      = 'all 0.4s ease-in-out'
+            this.bar.style.backgroundImage = 'linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent)'
+            this.bar.style.backgroundSize  = '1rem 1rem'
 
             this.label = document.createElement('label')
-
+            this.label.style.display = 'block'
+            
             let slot = document.createElement('slot')
 
             this.shadowRoot.appendChild(this.label)
@@ -33,12 +36,12 @@
             this.body.appendChild(this.bar)
             this.shadowRoot.appendChild(this.body)
 
-            this.updateTheme()
+            this._updateColor()
         }
 
         static get observedAttributes()
         {
-            return ['progress', 'theme', 'align']
+            return ['progress', 'color', 'align']
         }
 
         get progress()
@@ -46,9 +49,9 @@
             return this.getAttribute('progress')
         }
 
-        get theme()
+        get color()
         {
-            return this.getAttribute('theme')
+            return this.getAttribute('color')
         }
 
         get align()
@@ -61,9 +64,9 @@
             return this.setAttribute('progress', value)
         }
 
-        set theme(value)
+        set color(value)
         {
-            return this.getAttribute('theme', value)
+            return this.getAttribute('color', value)
         }
 
         set align(value)
@@ -71,7 +74,32 @@
             return this.getAttribute('align', value)
         }
 
-        updateProgressWidth()
+        _hexToRgb(hex)
+        {
+            let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
+            hex = hex.replace(shorthandRegex, (m, r, g, b)=> {
+                return r + r + g + g + b + b;
+            })
+
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+            return result ? {
+                red: parseInt(result[1], 16),
+                green: parseInt(result[2], 16),
+                blue: parseInt(result[3], 16)
+            } : null
+        }
+
+        _findBrightness(red, green, blue)
+        {
+            return (red * 299 + green * 587 + blue * 114) / 1000
+        }
+
+        _isBright(value)
+        {
+            return value > 123
+        }
+
+        _updateProgressWidth()
         {
             if(this.bar)
             {
@@ -79,39 +107,25 @@
             }
         }
 
-        updateTheme()
+        _updateColor()
         {
             if(this.bar && this.body)
             {
-                switch(this.theme)
+                let rgbColor = this._hexToRgb(this.color)
+                if(rgbColor)
                 {
-                    case 'red':
-                        this.bar.style.backgroundColor = '#FA6E57'
-                        this.body.style.borderColor    = '#FA6E57'
-                        this.body.style.color          = '#FFF'
-                        break
-                    case 'blue':
-                        this.bar.style.backgroundColor = '#464BFA'
-                        this.body.style.borderColor    = '#464BFA'
-                        this.body.style.color          = '#FFF'
-                        break
-                    case 'yellow':
-                        this.bar.style.backgroundColor = '#FAB846'
-                        this.body.style.borderColor    = '#FAB846'
-                        this.body.style.color          = '#000'
-                        break
-                    case 'green':
-                        this.bar.style.backgroundColor = '#53BF4A'
-                        this.body.style.borderColor    = '#53BF4A'
-                        this.body.style.color          = '#000'
-                        break
+                    let bright = this._isBright(this._findBrightness(rgbColor['red'], rgbColor['green'], rgbColor['blue']))
+                    this.body.style.color = bright ? '#000' : '#FFF'
+                } else {
+                    this.body.style.color = '#FFF'
                 }
+                this.bar.style.backgroundColor = this.color
+                this.body.style.borderColor    = this.color
             }
         }
 
-        updateAlign()
+        _updateAlign()
         {
-            console.log(this.align)
             if(this.bar && this.body)
             {
                 if(this.align === 'left')
@@ -134,13 +148,13 @@
             switch(name)
             {
                 case 'progress':
-                    this.updateProgressWidth()
+                    this._updateProgressWidth()
                     break
-                case 'theme':
-                    this.updateTheme()
+                case 'color':
+                    this._updateColor()
                     break
                 case 'align':
-                    this.updateAlign()
+                    this._updateAlign()
                     break
                 default:
                     break
