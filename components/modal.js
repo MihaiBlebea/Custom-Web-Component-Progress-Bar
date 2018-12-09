@@ -19,6 +19,8 @@
             this.modal.style.backgroundColor = '#FFF'
             this.modal.style.margin          = 'auto'
             this.modal.style.width           = '50%'
+            this.modal.style.opacity         = 0
+            this.modal.style.transition      = 'all 0.5s ease-out'
 
             this.overlay = document.createElement('div')
             this.overlay.style.backgroundColor = 'rgba(132, 132, 132, 0.6)'
@@ -27,8 +29,8 @@
             this.overlay.style.right           = 0
             this.overlay.style.top             = 0
             this.overlay.style.bottom          = 0
-            this.overlay.style.paddingTop      = '20vh'
             this.overlay.style.overflow        = 'auto'
+            this.overlay.style.transition      = 'all 0.5s ease-out'
             this.handleShowToggle()
 
             this.close = document.createElement('span')
@@ -93,7 +95,10 @@
         {
             if(this.overlay)
             {
-                this.overlay.style.display = this.show == 'true' ? 'block' : 'none'
+                this.overlay.style.opacity       = this.show == 'true' ? 1 : 0
+                this.overlay.style.pointerEvents = this.show == 'true' ? 'all' : 'none'
+                this.overlay.style.paddingTop    = this.show == 'true' ? '20vh' : '10vh'
+                this.modal.style.opacity         = this.show == 'true' ? 1 : 0
             }
         }
 

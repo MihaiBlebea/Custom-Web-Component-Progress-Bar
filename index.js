@@ -3,11 +3,15 @@ const SimpleCard       = require('./components/card.js')
 const SimpleTooltip    = require('./components/tooltip.js')
 const SimpleModal      = require('./components/modal.js')
 const SimpleBreadcrumb = require('./components/breadcrumb.js')
+const SimpleSlideshow  = require('./components/slideshow.js')
+
 
 customElements.define('simple-progress-bar', SimpleProgress)
 customElements.define('simple-card', SimpleCard)
 customElements.define('simple-tooltip', SimpleTooltip)
 customElements.define('simple-modal', SimpleModal)
 customElements.define('simple-breadcrumb', SimpleBreadcrumb)
+customElements.define('simple-slideshow', SimpleSlideshow)
+
 
 module.exports = customElements
