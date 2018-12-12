@@ -8,6 +8,8 @@
             super()
             this.attachShadow({ mode: 'open' })
 
+            this.border = 'solid 0.5px #d5d5d5'
+
             this._fetchData          = this._fetchData.bind(this)
             this._removeChildrenNode = this._removeChildrenNode.bind(this)
             this._handleSlotChange   = this._handleSlotChange.bind(this)
@@ -56,6 +58,11 @@
             return this.getAttribute('click')
         }
 
+        get color()
+        {
+            return this.getAttribute('color')
+        }
+
         set url(value)
         {
             return this.setAttribute('url', value)
@@ -69,6 +76,11 @@
         set click(value)
         {
             return this.setAttribute('click', value)
+        }
+
+        set color(value)
+        {
+            return this.setAttribute('color', value)
         }
 
         _handleSlotChange()
@@ -89,6 +101,19 @@
             }
         }
 
+        _createDropdownElement()
+        {
+            let element = document.createElement('div')
+            element.style.borderBottom  = this.border
+            element.style.borderLeft    = this.border
+            element.style.borderRight   = this.border
+            element.style.paddingTop    = '5px'
+            element.style.paddingBottom = '5px'
+            element.style.paddingLeft   = '10px'
+            element.style.paddingRight  = '10px'
+            return element
+        }
+
         _fetchData(event)
         {
             let value  = event.path[0].value
@@ -100,30 +125,47 @@
                     this._removeChildrenNode(this.dropdown)
                     this.dropdown.style.opacity = 0
 
-                    data.map((item)=> {
-                        if(item[this.name].toLowerCase().startsWith(value.toLowerCase()) && value !== '')
+                    let foundMatches = []
+                    data.forEach((item)=> {
+                        if(item[this.name].toLowerCase().startsWith(value.toLowerCase()))
                         {
-                            let element = document.createElement('div')
-                            element.style.borderBottom  = border
-                            element.style.borderLeft    = border
-                            element.style.borderRight   = border
-                            element.style.paddingTop    = '5px'
-                            element.style.paddingBottom = '5px'
-                            element.style.paddingLeft   = '10px'
-                            element.style.paddingRight  = '10px'
-
-                            let url = document.createElement('a')
-                            url.style.textDecoration = 'none'
-                            url.style.color          = 'initial'
-                            url.textContent          = item[this.name]
-                            url.setAttribute('href', item[this.click])
-
-                            element.appendChild(url)
-                            this.dropdown.appendChild(element)
-
-                            this.dropdown.style.opacity = 1
+                            foundMatches.push(item)
                         }
                     })
+
+                    console.log(foundMatches.length)
+                    if(foundMatches.length === 0 && value !== '')
+                    {
+                        let element = this._createDropdownElement()
+                        element.textContent = 'No item found'
+                        element.style.color = 'grey'
+                        this.dropdown.appendChild(element)
+                        this.dropdown.style.opacity = 1
+
+                    } else if(foundMatches.length > 0 && value !== '') {
+                        foundMatches.map((item)=> {
+                            let element = this._createDropdownElement()
+
+                            element.addEventListener('click', ()=> {
+                                window.location = item[this.click]
+                            })
+                            element.textContent  = item[this.name]
+                            element.style.cursor = 'pointer'
+                            element.addEventListener('mouseenter', ()=> {
+                                element.style.backgroundColor = this.color
+                                element.style.color           = '#FFF'
+                            })
+                            element.addEventListener('mouseleave', ()=> {
+                                element.style.backgroundColor = 'initial'
+                                element.style.color           = 'initial'
+                            })
+
+                            this.dropdown.appendChild(element)
+                            this.dropdown.style.opacity = 1
+                        })
+                    } else {
+                        return
+                    }
                 })
             }).catch((error)=> {
                 console.log(error)
@@ -136,7 +178,6 @@
         }
     }
 
-    // customElements.define('simple-search', SimpleSearch)
     module.exports = SimpleSearch
 
 })()
