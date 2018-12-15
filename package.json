@@ -1,6 +1,6 @@
 {
     "name": "simple-js-web-components",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "description": "A simple progress bar custom web element. Super light & NO dependencies.",
     "main": "index.js",
     "scripts": {
